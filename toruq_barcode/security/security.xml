@@ -2,7 +2,18 @@
 <odoo>
     <record id="group_barcode_count_only" model="res.groups">
         <field name="name">Barcode: Count Only (Toruq)</field>
-        <field name="comment">Members cannot scan products/locations/operations from the Barcode home screen. They can only open "Inventory Count".</field>
+        <field name="comment">Cannot scan from the Barcode home screen, Operations button hidden. Inventory Count still works.</field>
+    </record>
+
+    <record id="group_barcode_hide_scanner" model="res.groups">
+        <field name="name">Barcode: Hide Scanner Graphic (Toruq)</field>
+        <field name="comment">Hides the barcode picture / "Scan or tap" block on the Barcode home screen. Can be used alone.</field>
+    </record>
+
+    <record id="group_barcode_guided_count" model="res.groups">
+        <field name="name">Barcode: Guided Count Mode (Toruq)</field>
+        <field name="comment">Shows one large "Start counting now" button with the number of products to count. Implies Count Only + Hide Scanner Graphic.</field>
+        <field name="implied_ids" eval="[(4, ref('group_barcode_count_only')), (4, ref('group_barcode_hide_scanner'))]"/>
     </record>
 
     <!-- Optional hardening: INACTIVE by default. Enable only after testing POS/transfers with the count-only user. -->

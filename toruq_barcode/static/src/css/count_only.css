@@ -1,5 +1,32 @@
-/* UI-only convenience: hide the "Operations" button on the Barcode home screen.
-   Real enforcement is server-side (controllers/main.py). Verify the selector in browser DevTools. */
+/* Count-only: hide "Operations" button. Real enforcement is server-side (controllers/main.py). */
 .o_toruq_count_only .o_stock_barcode_main_menu .btn-primary {
     display: none !important;
+}
+
+/* Hide scanner graphic + "Scan or tap" text. */
+.o_toruq_hide_scanner .o_stock_barcode_main_menu div:has(> .o_barcode_tap_to_scan),
+.o_toruq_hide_scanner .o_stock_barcode_main_menu .o_barcode_tap_to_scan,
+.o_toruq_hide_scanner .o_stock_barcode_main_menu .o_stock_mobile_barcode {
+    display: none !important;
+}
+
+/* Guided count mode: hide scan instructions list, style the big button. */
+.o_toruq_guided_count .o_stock_barcode_main_menu ul {
+    display: none !important;
+}
+.o_toruq_guided_btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 110px;
+    margin: 2rem 0;
+    border-radius: 16px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+.o_toruq_guided_btn .o_toruq_guided_num {
+    font-size: 1.8rem;
+    padding: 0.4rem 1rem;
 }
