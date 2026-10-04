@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_barcode_count_only" model="res.groups">
+        <field name="name">Barcode: Count Only (Toruq)</field>
+        <field name="comment">Members cannot scan products/locations/operations from the Barcode home screen. They can only open "Inventory Count".</field>
+    </record>
+
+    <!-- Optional hardening: INACTIVE by default. Enable only after testing POS/transfers with the count-only user. -->
+    <record id="rule_quant_count_only_read" model="ir.rule">
+        <field name="name">Toruq: count-only users read only quants assigned to them</field>
+        <field name="model_id" ref="stock.model_stock_quant"/>
+        <field name="groups" eval="[(4, ref('group_barcode_count_only'))]"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+        <field name="active" eval="False"/>
+    </record>
+</odoo>

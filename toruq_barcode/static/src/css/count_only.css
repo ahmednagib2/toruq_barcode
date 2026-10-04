@@ -1,0 +1,5 @@
+/* UI-only convenience: hide the "Operations" button on the Barcode home screen.
+   Real enforcement is server-side (controllers/main.py). Verify the selector in browser DevTools. */
+.o_toruq_count_only .o_stock_barcode_main_menu .btn-primary {
+    display: none !important;
+}
