@@ -1,6 +1,6 @@
 {
     "name": "Toruq Barcode - Count Only",
-    "version": "18.0.1.0.0",
+    "version": "18.0.1.1.0",
     "summary": "Restrict selected users in the Barcode app to inventory counting only",
     "category": "Inventory/Barcode",
     "author": "Toruq",
