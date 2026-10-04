@@ -6,21 +6,18 @@ Three groups (tick them in the user form, Technical section):
 |---|---|
 | Barcode: Count Only (Toruq) | Scanning from the home screen is refused server-side; "Operations" hidden. Inventory Count still works. |
 | Barcode: Hide Scanner Graphic (Toruq) | Hides the barcode picture and "Scan or tap" text. Can be used alone. |
-| Barcode: Guided Count Mode (Toruq) | Implies both groups above. Replaces the scanner block with one large "Start counting now" button showing the number of products to count (the number is read from the original Inventory Count button). |
+| Barcode: Guided Count Mode (Toruq) | Implies both groups above. Home screen shows a small table (scanned products | required products) and one large Arabic button "ابدأ الجرد الآن". Brand colour #ff3d00. |
 
-Optional: activate record rule `rule_quant_count_only_read` (inactive by default) to restrict reading stock.quant to quants assigned to the user.
+Guided mode details:
+- Required = number on the original Inventory Count button (hidden, clicked programmatically).
+- Scanned = number inside the "Apply (N)" button (`button.o_apply_page`) on the count screen. That button exists only there, so the last seen value is stored in browser localStorage (per host and user) and shown on the home screen. It can be stale after applying/clearing on another device.
+
+Optional: activate record rule `rule_quant_count_only_read` (inactive by default).
 
 ## Install / upgrade (test DB first)
-1. Put `toruq_barcode/` in the addons path of the project/branch Odoo builds from; rebuild/restart.
-2. Update Apps List, install or upgrade the module.
-3. Users > open user > tick the group(s). User must log out and in.
-4. Inventory > Settings > Barcode: untick "Show Quantity to Count".
-
-## Test matrix
-- Count-only user: scan any code on home screen -> warning.
-- Hide-scanner user: picture and "Scan or tap" gone; other buttons unchanged.
-- Guided user: one big button, label "ابدأ عمل الجرد الآن", number equals the old Inventory Count badge; click opens Inventory Count; count it and save.
-- Normal user: unchanged.
+1. Replace `toruq_barcode/` in the addons path; rebuild/restart.
+2. Upgrade the module. Users must log out and in.
+3. Inventory > Settings > Barcode: untick "Show Quantity to Count".
 
 ## Not verified
-stock_barcode is Enterprise; its source was not available. `scan_from_main_menu` and the selectors `.o_stock_barcode_main_menu`, `.btn-info`, `.badge`, `ul` are based on Odoo conventions and on HTML supplied by the user; verify in DevTools.
+stock_barcode is Enterprise; source not available. Selectors are based on HTML supplied by the user.

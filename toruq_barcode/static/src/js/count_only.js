@@ -13,8 +13,51 @@ if (flags.hide_scanner) {
 if (flags.guided) {
     root.classList.add("o_toruq_guided_count");
 
-    const isArabic = (root.lang || "").toLowerCase().startsWith("ar");
-    const LABEL = isArabic ? "ابدأ عمل الجرد الآن" : "Start counting now";
+    const L = {
+        start: "ابدأ الجرد الآن",
+        scanned: "المنتجات الممسوحة",
+        required: "المنتجات المطلوبة",
+    };
+    const STORE_KEY = `toruq_barcode_scanned:${location.host}:${flags.uid || 0}`;
+
+    const readStored = () => {
+        try {
+            return localStorage.getItem(STORE_KEY) || "0";
+        } catch (e) {
+            return "0";
+        }
+    };
+    const writeStored = (value) => {
+        try {
+            if (localStorage.getItem(STORE_KEY) !== value) {
+                localStorage.setItem(STORE_KEY, value);
+            }
+        } catch (e) {
+            /* storage unavailable */
+        }
+    };
+
+    // On the count screen, read the number inside the "Apply (N)" button.
+    const trackApply = () => {
+        const apply = document.querySelector("button.o_apply_page");
+        if (!apply) {
+            return;
+        }
+        const muted = apply.querySelector(".text-muted");
+        const match = ((muted && muted.textContent) || "").match(/\d+/);
+        writeStored(match ? match[0] : "0");
+    };
+
+    const el = (tag, cls, text) => {
+        const node = document.createElement(tag);
+        if (cls) {
+            node.className = cls;
+        }
+        if (text !== undefined) {
+            node.textContent = text;
+        }
+        return node;
+    };
 
     const findOriginal = (menu) => {
         const buttons = [...menu.querySelectorAll("button")].filter(
@@ -32,7 +75,14 @@ if (flags.guided) {
         return match ? match[0] : "0";
     };
 
+    const setText = (node, value) => {
+        if (node.textContent !== value) {
+            node.textContent = value;
+        }
+    };
+
     const sync = () => {
+        trackApply();
         const menu = document.querySelector(".o_stock_barcode_main_menu");
         if (!menu) {
             return;
@@ -44,33 +94,34 @@ if (flags.guided) {
         if (orig.style.display !== "none") {
             orig.style.setProperty("display", "none", "important");
         }
-        let mine = menu.querySelector(".o_toruq_guided_btn");
-        if (!mine) {
-            mine = document.createElement("button");
-            mine.type = "button";
-            mine.className = "btn btn-info o_toruq_guided_btn w-100";
-            const num = document.createElement("span");
-            num.className = "o_toruq_guided_num badge rounded-pill bg-white text-info";
-            const label = document.createElement("span");
-            label.className = "o_toruq_guided_label";
-            label.textContent = LABEL;
-            mine.appendChild(num);
-            mine.appendChild(label);
-            mine.addEventListener("click", () => {
+        let box = menu.querySelector(".o_toruq_guided_box");
+        if (!box) {
+            box = el("div", "o_toruq_guided_box");
+            const table = el("table", "o_toruq_guided_table");
+            const head = el("tr");
+            head.appendChild(el("th", "", L.scanned));
+            head.appendChild(el("th", "", L.required));
+            const row = el("tr");
+            row.appendChild(el("td", "o_toruq_scanned", "0"));
+            row.appendChild(el("td", "o_toruq_required", "0"));
+            table.appendChild(head);
+            table.appendChild(row);
+            const button = el("button", "btn o_toruq_guided_btn", L.start);
+            button.type = "button";
+            button.addEventListener("click", () => {
                 const current = findOriginal(menu);
                 if (current) {
                     current.click();
                 }
             });
+            box.appendChild(table);
+            box.appendChild(button);
             const scan = menu.querySelector(".o_barcode_tap_to_scan");
             const anchor = (scan && scan.parentElement) || orig;
-            anchor.insertAdjacentElement("beforebegin", mine);
+            anchor.insertAdjacentElement("beforebegin", box);
         }
-        const numEl = mine.querySelector(".o_toruq_guided_num");
-        const count = extractCount(orig);
-        if (numEl.textContent !== count) {
-            numEl.textContent = count;
-        }
+        setText(box.querySelector(".o_toruq_scanned"), readStored());
+        setText(box.querySelector(".o_toruq_required"), extractCount(orig));
     };
 
     let scheduled = false;
