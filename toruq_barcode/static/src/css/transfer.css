@@ -1,0 +1,70 @@
+/* Transfer operator. Brand colour: #ff3d00 */
+.o_toruq_transfer_operator .o_stock_barcode_main_menu .o_button_operations {
+    display: none !important;
+}
+.o_toruq_transfer_btn {
+    color: #fff;
+    background: #ff3d00;
+    border: 0;
+    border-radius: 14px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(255, 61, 0, 0.3);
+}
+.o_toruq_transfer_btn:hover,
+.o_toruq_transfer_btn:focus {
+    color: #fff;
+    background: #e03500;
+}
+.o_toruq_modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+}
+.o_toruq_modal_box {
+    width: min(92vw, 420px);
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.o_toruq_modal_box h4 {
+    margin-bottom: 0.25rem;
+    color: #ff3d00;
+}
+.o_toruq_modal_from {
+    color: #666;
+}
+.o_toruq_dest_btn {
+    margin-top: 0.6rem;
+    padding: 0.9rem;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #ff3d00;
+    background: #fff3ef;
+    border: 2px solid #ff3d00;
+    border-radius: 12px;
+}
+.o_toruq_dest_btn:hover:not(:disabled) {
+    color: #fff;
+    background: #ff3d00;
+}
+.o_toruq_cancel_btn {
+    margin-top: 1rem;
+    color: #555;
+    background: #f1f1f1;
+    border: 0;
+    border-radius: 12px;
+}
+/* Relabel the Validate button for operators (selector must be checked in DevTools). */
+.o_toruq_transfer_operator .o_validate_page {
+    font-size: 0 !important;
+}
+.o_toruq_transfer_operator .o_validate_page::after {
+    content: "إرسال موافقة التحويل للمحاسب";
+    font-size: 1rem;
+}

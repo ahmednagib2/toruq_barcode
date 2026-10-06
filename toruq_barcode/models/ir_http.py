@@ -14,5 +14,7 @@ class IrHttp(models.AbstractModel):
             "count_only": count_only,
             "hide_scanner": user.has_group("toruq_barcode.group_barcode_hide_scanner"),
             "guided": user.has_group("toruq_barcode.group_barcode_guided_count"),
+            "transfer_operator": user.has_group("toruq_barcode.group_barcode_transfer_operator"),
+            "transfer_approver": user.has_group("toruq_barcode.group_barcode_transfer_approver"),
         }
         return res

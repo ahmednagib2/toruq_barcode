@@ -1,30 +1,29 @@
 # toruq_barcode (Odoo 18)
 
-Three groups (tick them in the user form, Technical section):
+Every feature has its own switch in the user form (Technical section) and is independent.
 
+## Count features
 | Group | Effect |
 |---|---|
-| Barcode: Count Only (Toruq) | Scanning from the home screen is refused server-side; "Operations" hidden; **cannot apply inventory adjustments**. |
-| Barcode: Hide Scanner Graphic (Toruq) | Hides the barcode picture and "Scan or tap" text. Can be used alone. |
-| Barcode: Guided Count Mode (Toruq) | Implies both groups above. Table (scanned | required) + one large Arabic button "ابدأ الجرد الآن". Brand colour #ff3d00. |
+| Barcode: Count Only (Toruq) | Home-screen scan refused server-side; Operations hidden; cannot apply inventory adjustments; requester gets a pop-up when the user presses Apply. |
+| Barcode: Hide Scanner Graphic (Toruq) | Hides the barcode picture. |
+| Barcode: Guided Count Mode (Toruq) | Implies both; table + "ابدأ الجرد الآن". |
 
-## Approval flow (v18.0.1.2.0)
-- Odoo does not store who requested a count. The module adds `stock.quant.toruq_requester_id`: whenever a user who is NOT Count Only sets the counter (`user_id`) on a line (Request a Count wizard or editing the User column), that user is recorded as the requester. Lines requested BEFORE this version have no requester.
-- A Count Only user (not Inventory Administrator) who presses Apply gets an error; nothing is applied.
-- The requester receives a sticky pop-up (bus `simple_notification`): "<name> أرسل جرد N منتج ويحتاج موافقتك", plus an inbox message. If no requester is recorded, all Inventory Administrators are notified instead.
-- The pop-up only reaches users who are online; the inbox message is the persistent copy (depends on the user's notification preference: "Handle in Odoo").
-- The requester reviews Inventory > Operations > Physical Inventory (on hand, counted, difference) and presses Apply.
+## Transfers with approval (v18.0.2.0.0)
+| Item | Effect |
+|---|---|
+| User field "مخزن الفرع" | Source warehouse of the user (Odoo has no such link). Set it in the user form (bottom of the form). |
+| Barcode: Transfer Operator (Toruq) | Barcode home shows "ابدأ بتحويل المخزون" (Operations hidden). Choose destination warehouse -> an internal transfer (source stock -> destination stock) is created and opened in Barcode. Pressing Validate sends it for approval instead of validating. |
+| Barcode: Transfer Approver (Toruq) | Give it to ONE person (the accountant). Gets a pop-up + inbox message, sees Inventory > "طلبات التحويل", opens the transfer, presses "موافق وتنفيذ التحويل" (validates it with the standard Odoo mechanism) or "رفض". |
+
+Operators cannot set the approval fields (guarded in `write`), and cannot validate internal transfers. Inventory Administrators can also approve.
 
 ## Install / upgrade (test DB first)
-1. Replace `toruq_barcode/`; rebuild/restart, then Upgrade the module (adds a new column).
-2. Users log out and in.
-3. IMPORTANT: create the count request again (Request a Count) after the upgrade so the requester is recorded.
+1. Replace `toruq_barcode/`; rebuild/restart, Upgrade the module. Users log out and in.
+2. Set "مخزن الفرع" for each operator; tick the groups.
 
-## Test matrix
-- Manager A requests a count for the cashier; cashier counts and presses Apply -> error for cashier, pop-up for A (A must be online).
-- Line with no requester -> all Inventory Administrators are notified.
-- Manager presses Apply -> works, move appears in Moves History.
-- Normal user: unchanged.
-
-## Not verified
-stock_barcode is Enterprise; source not available. Whether the Barcode Apply button reaches `action_apply_inventory`/`_apply_inventory`, and that setting the counter always goes through `stock.quant.write`, must be tested.
+## Not verified (Enterprise source not available)
+- Opening the new transfer in Barcode (`action_open_picking_client_action`, fallback client action tag).
+- Whether Barcode saves scanned quantities before Validate, and whether the Validate button class is `.o_validate_page`.
+- Approval of a draft transfer created from scratch in Barcode (confirm + validate with skip flags).
+Test: operator -> create transfer -> scan -> Validate -> approver gets pop-up -> approve -> stock moves (Moves History).

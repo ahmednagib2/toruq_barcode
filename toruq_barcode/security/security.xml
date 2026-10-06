@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- ===== Count features (independent from transfers) ===== -->
     <record id="group_barcode_count_only" model="res.groups">
         <field name="name">Barcode: Count Only (Toruq)</field>
         <field name="comment">Cannot scan from the Barcode home screen, Operations button hidden. Inventory Count still works.</field>
@@ -14,6 +15,19 @@
         <field name="name">Barcode: Guided Count Mode (Toruq)</field>
         <field name="comment">Shows one large "Start counting now" button with the number of products to count. Implies Count Only + Hide Scanner Graphic.</field>
         <field name="implied_ids" eval="[(4, ref('group_barcode_count_only')), (4, ref('group_barcode_hide_scanner'))]"/>
+    </record>
+
+    <!-- ===== Transfer features (independent from counts) ===== -->
+    <record id="group_barcode_transfer_operator" model="res.groups">
+        <field name="name">Barcode: Transfer Operator (Toruq)</field>
+        <field name="comment">Sees "Start stock transfer" in Barcode, builds an inter-warehouse transfer and sends it to the approver. Cannot validate it.</field>
+        <field name="implied_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+    </record>
+
+    <record id="group_barcode_transfer_approver" model="res.groups">
+        <field name="name">Barcode: Transfer Approver (Toruq)</field>
+        <field name="comment">Approves / rejects pending transfers. Give this group to ONE person (the accountant).</field>
+        <field name="implied_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
     </record>
 
     <!-- Optional hardening: INACTIVE by default. Enable only after testing POS/transfers with the count-only user. -->

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_picking_form_toruq_approval" model="ir.ui.view">
+        <field name="name">stock.picking.form.toruq.approval</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <field name="toruq_approval_state" invisible="1"/>
+                <field name="picking_type_code" invisible="1"/>
+                <button name="action_toruq_request_approval" type="object" class="btn-primary"
+                        string="إرسال للموافقة"
+                        groups="toruq_barcode.group_barcode_transfer_operator"
+                        invisible="picking_type_code != 'internal' or toruq_approval_state not in ('none', 'rejected') or state in ('done', 'cancel')"/>
+                <button name="action_toruq_approve" type="object" class="btn-primary"
+                        string="موافق وتنفيذ التحويل"
+                        groups="toruq_barcode.group_barcode_transfer_approver,stock.group_stock_manager"
+                        invisible="toruq_approval_state != 'requested' or state in ('done', 'cancel')"/>
+                <button name="action_toruq_reject" type="object"
+                        string="رفض"
+                        groups="toruq_barcode.group_barcode_transfer_approver,stock.group_stock_manager"
+                        invisible="toruq_approval_state != 'requested' or state in ('done', 'cancel')"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <group string="اعتماد التحويل (Toruq)" invisible="toruq_approval_state == 'none'">
+                    <field name="toruq_approval_state"/>
+                    <field name="toruq_requested_by"/>
+                    <field name="toruq_approver_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_toruq_pending_transfers" model="ir.actions.act_window">
+        <field name="name">طلبات التحويل بانتظار الاعتماد</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('toruq_approval_state', '=', 'requested')]</field>
+    </record>
+
+    <menuitem id="menu_toruq_pending_transfers"
+              name="طلبات التحويل"
+              parent="stock.menu_stock_root"
+              action="action_toruq_pending_transfers"
+              sequence="15"
+              groups="toruq_barcode.group_barcode_transfer_approver,stock.group_stock_manager"/>
+</odoo>
