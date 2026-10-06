@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_toruq_transfer_log_list" model="ir.ui.view">
+        <field name="name">toruq.transfer.log.list</field>
+        <field name="model">toruq.transfer.log</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="date"/>
+                <field name="event"/>
+                <field name="picking_id"/>
+                <field name="src_warehouse_id"/>
+                <field name="dest_warehouse_id"/>
+                <field name="user_id"/>
+                <field name="courier"/>
+                <field name="reason"/>
+                <field name="detail"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_toruq_transfer_log" model="ir.actions.act_window">
+        <field name="name">سجل تحويلات الفروع</field>
+        <field name="res_model">toruq.transfer.log</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <menuitem id="menu_toruq_transfer_log" name="سجل تحويلات الفروع"
+              parent="stock.menu_stock_root" action="action_toruq_transfer_log" sequence="17"
+              groups="stock.group_stock_manager"/>
+
+    <record id="view_toruq_receive_wizard_form" model="ir.ui.view">
+        <field name="name">toruq.receive.wizard.form</field>
+        <field name="model">toruq.receive.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="picking_id"/>
+                    <field name="summary"/>
+                    <field name="reason"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" type="object" class="btn-primary"
+                            string="تأكيد الاستلام ورفض غير الواصل"/>
+                    <button string="إلغاء" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

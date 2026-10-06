@@ -1,5 +1,6 @@
-/* Transfer operator. Brand colour: #ff3d00 */
-.o_toruq_transfer_operator .o_stock_barcode_main_menu .o_button_operations {
+/* Transfers. Brand colour: #ff3d00 */
+.o_toruq_transfer_operator .o_stock_barcode_main_menu .o_button_operations,
+.o_toruq_transfer_receiver .o_stock_barcode_main_menu .o_button_operations {
     display: none !important;
 }
 .o_toruq_transfer_btn {
@@ -26,7 +27,9 @@
     background: rgba(0, 0, 0, 0.45);
 }
 .o_toruq_modal_box {
-    width: min(92vw, 420px);
+    width: min(92vw, 440px);
+    max-height: 90vh;
+    overflow-y: auto;
     padding: 1.5rem;
     background: #fff;
     border-radius: 16px;
@@ -39,10 +42,46 @@
 .o_toruq_modal_from {
     color: #666;
 }
+.o_toruq_label {
+    display: block;
+    margin-top: 0.8rem;
+    font-weight: 600;
+}
+.o_toruq_input {
+    display: block;
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+.o_toruq_summary {
+    margin: 0.8rem 0 0;
+    padding: 0.5rem 0.7rem;
+    color: #ff3d00;
+    font-weight: 700;
+    background: #fff3ef;
+    border-radius: 10px;
+}
+.o_toruq_summary:empty {
+    display: none;
+}
+.o_toruq_start_btn {
+    margin-top: 1rem;
+    padding: 0.9rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    background: #ff3d00;
+    border: 0;
+    border-radius: 12px;
+}
+.o_toruq_start_btn:disabled {
+    opacity: 0.5;
+}
 .o_toruq_dest_btn {
     margin-top: 0.6rem;
-    padding: 0.9rem;
-    font-size: 1.15rem;
+    padding: 0.8rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #ff3d00;
     background: #fff3ef;
@@ -54,17 +93,22 @@
     background: #ff3d00;
 }
 .o_toruq_cancel_btn {
-    margin-top: 1rem;
+    margin-top: 0.8rem;
     color: #555;
     background: #f1f1f1;
     border: 0;
     border-radius: 12px;
 }
-/* Relabel the Validate button for operators (selector must be checked in DevTools). */
-.o_toruq_transfer_operator .o_validate_page {
+/* Relabel Validate (selector must be checked in DevTools). Receiver rule wins if both groups. */
+.o_toruq_transfer_operator .o_validate_page,
+.o_toruq_transfer_receiver .o_validate_page {
     font-size: 0 !important;
 }
 .o_toruq_transfer_operator .o_validate_page::after {
-    content: "إرسال موافقة التحويل للمحاسب";
+    content: "إخراج البضاعة";
+    font-size: 1rem;
+}
+.o_toruq_transfer_receiver .o_validate_page::after {
+    content: "تأكيد الاستلام";
     font-size: 1rem;
 }
