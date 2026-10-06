@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Stock by branch (locations) -->
+    <record id="view_brt_quant_pivot" model="ir.ui.view">
+        <field name="name">brt.stock.quant.pivot</field>
+        <field name="model">stock.quant</field>
+        <field name="arch" type="xml">
+            <pivot string="المخزون حسب الفرع">
+                <field name="location_id" type="row"/>
+                <field name="quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_brt_quant_graph" model="ir.ui.view">
+        <field name="name">brt.stock.quant.graph</field>
+        <field name="model">stock.quant</field>
+        <field name="arch" type="xml">
+            <graph string="المخزون حسب الفرع" type="bar">
+                <field name="location_id"/>
+                <field name="quantity" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="action_brt_stock_by_branch" model="ir.actions.act_window">
+        <field name="name">إجمالي المخزون وحسب كل فرع</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="domain">[('location_id.usage', '=', 'internal')]</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_brt_quant_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_brt_quant_graph')})]"/>
+    </record>
+    <record id="action_brt_in_transit" model="ir.actions.act_window">
+        <field name="name">بضاعة في الطريق (موقع العبور)</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="domain">[('location_id.usage', '=', 'transit')]</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_brt_quant_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_brt_quant_graph')})]"/>
+    </record>
+
+    <!-- Transfer analysis from the log -->
+    <record id="view_brt_log_list" model="ir.ui.view">
+        <field name="name">brt.transfer.log.list</field>
+        <field name="model">brt.transfer.log</field>
+        <field name="arch" type="xml">
+            <list create="false" edit="false" delete="false">
+                <field name="date"/>
+                <field name="event"/>
+                <field name="picking_id"/>
+                <field name="src_warehouse_id"/>
+                <field name="dest_warehouse_id"/>
+                <field name="user_id"/>
+                <field name="courier"/>
+                <field name="qty"/>
+                <field name="lines"/>
+                <field name="signed"/>
+                <field name="reason"/>
+                <field name="detail"/>
+            </list>
+        </field>
+    </record>
+    <record id="view_brt_log_pivot" model="ir.ui.view">
+        <field name="name">brt.transfer.log.pivot</field>
+        <field name="model">brt.transfer.log</field>
+        <field name="arch" type="xml">
+            <pivot string="تحليل التحويلات">
+                <field name="src_warehouse_id" type="row"/>
+                <field name="dest_warehouse_id" type="row"/>
+                <field name="event" type="col"/>
+                <field name="qty" type="measure"/>
+                <field name="lines" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    <record id="view_brt_log_graph" model="ir.ui.view">
+        <field name="name">brt.transfer.log.graph</field>
+        <field name="model">brt.transfer.log</field>
+        <field name="arch" type="xml">
+            <graph string="تحليل التحويلات" type="bar">
+                <field name="date" interval="month"/>
+                <field name="event"/>
+                <field name="qty" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    <record id="view_brt_log_people_pivot" model="ir.ui.view">
+        <field name="name">brt.transfer.log.people.pivot</field>
+        <field name="model">brt.transfer.log</field>
+        <field name="arch" type="xml">
+            <pivot string="من أرسل ومن استلم ومن وقّع">
+                <field name="user_id" type="row"/>
+                <field name="event" type="col"/>
+                <field name="qty" type="measure"/>
+                <field name="lines" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_brt_analysis" model="ir.actions.act_window">
+        <field name="name">تحليل التحويلات بين الفروع</field>
+        <field name="res_model">brt.transfer.log</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_brt_log_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_brt_log_graph')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_brt_log_list')})]"/>
+    </record>
+    <record id="action_brt_people" model="ir.actions.act_window">
+        <field name="name">من أرسل ومن استلم ومن وقّع</field>
+        <field name="res_model">brt.transfer.log</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_brt_log_people_pivot')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_brt_log_list')})]"/>
+    </record>
+    <record id="action_brt_log" model="ir.actions.act_window">
+        <field name="name">سجل التحويلات بين الفروع</field>
+        <field name="res_model">brt.transfer.log</field>
+        <field name="view_mode">list</field>
+        <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'list', 'view_id': ref('view_brt_log_list')})]"/>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="menu_brt_root" name="تحويلات الفروع"
+              parent="stock.menu_stock_root" sequence="20"
+              groups="toruq_branch_transfer.group_brt_user,stock.group_stock_manager"/>
+    <menuitem id="menu_brt_incoming" name="تحويلات واردة لي" parent="menu_brt_root"
+              action="action_brt_incoming" sequence="1"
+              groups="toruq_branch_transfer.group_brt_user"/>
+    <menuitem id="menu_brt_all" name="كل تحويلات الفروع" parent="menu_brt_root"
+              action="action_brt_all_transfers" sequence="2" groups="stock.group_stock_manager"/>
+    <menuitem id="menu_brt_dashboard" name="لوحة الإدارة" parent="menu_brt_root"
+              sequence="3" groups="stock.group_stock_manager"/>
+    <menuitem id="menu_brt_dash_stock" name="إجمالي المخزون وحسب كل فرع" parent="menu_brt_dashboard"
+              action="action_brt_stock_by_branch" sequence="1"/>
+    <menuitem id="menu_brt_dash_transit" name="بضاعة في الطريق" parent="menu_brt_dashboard"
+              action="action_brt_in_transit" sequence="2"/>
+    <menuitem id="menu_brt_dash_analysis" name="تحليل التحويلات" parent="menu_brt_dashboard"
+              action="action_brt_analysis" sequence="3"/>
+    <menuitem id="menu_brt_dash_people" name="من أرسل ومن استلم ومن وقّع" parent="menu_brt_dashboard"
+              action="action_brt_people" sequence="4"/>
+    <menuitem id="menu_brt_log" name="سجل التحويلات" parent="menu_brt_root"
+              action="action_brt_log" sequence="4" groups="stock.group_stock_manager"/>
+    <menuitem id="menu_brt_routes" name="المسارات والصلاحيات" parent="menu_brt_root"
+              action="action_brt_route" sequence="5" groups="stock.group_stock_manager"/>
+</odoo>

@@ -1,0 +1,111 @@
+/* Branch transfers. Brand colour: #ff3d00 */
+.o_brt_sender .o_stock_barcode_main_menu .o_button_operations,
+.o_brt_receiver .o_stock_barcode_main_menu .o_button_operations {
+    display: none !important;
+}
+.o_brt_btn {
+    color: #fff;
+    background: #ff3d00;
+    border: 0;
+    border-radius: 14px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(255, 61, 0, 0.3);
+}
+.o_brt_btn:hover,
+.o_brt_btn:focus {
+    color: #fff;
+    background: #e03500;
+}
+.o_brt_modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.45);
+}
+.o_brt_modal_box {
+    width: min(92vw, 440px);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.o_brt_modal_box h4 {
+    margin-bottom: 0.25rem;
+    color: #ff3d00;
+}
+.o_brt_label {
+    display: block;
+    margin-top: 0.8rem;
+    font-weight: 600;
+}
+.o_brt_input {
+    display: block;
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+.o_brt_summary {
+    margin: 0.8rem 0 0;
+    padding: 0.5rem 0.7rem;
+    color: #ff3d00;
+    font-weight: 700;
+    background: #fff3ef;
+    border-radius: 10px;
+}
+.o_brt_summary:empty {
+    display: none;
+}
+.o_brt_start_btn {
+    margin-top: 1rem;
+    padding: 0.9rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    background: #ff3d00;
+    border: 0;
+    border-radius: 12px;
+}
+.o_brt_start_btn:disabled {
+    opacity: 0.5;
+}
+.o_brt_dest_btn {
+    margin-top: 0.6rem;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ff3d00;
+    background: #fff3ef;
+    border: 2px solid #ff3d00;
+    border-radius: 12px;
+}
+.o_brt_dest_btn:hover:not(:disabled) {
+    color: #fff;
+    background: #ff3d00;
+}
+.o_brt_cancel_btn {
+    margin-top: 0.8rem;
+    color: #555;
+    background: #f1f1f1;
+    border: 0;
+    border-radius: 12px;
+}
+/* Relabel Validate (selector must be checked in DevTools). Receiver rule wins if both. */
+.o_brt_sender .o_validate_page,
+.o_brt_receiver .o_validate_page {
+    font-size: 0 !important;
+}
+.o_brt_sender .o_validate_page::after {
+    content: "توقيع وإخراج البضاعة";
+    font-size: 1rem;
+}
+.o_brt_receiver .o_validate_page::after {
+    content: "توقيع وتأكيد الاستلام";
+    font-size: 1rem;
+}

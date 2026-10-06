@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_brt_route_list" model="ir.ui.view">
+        <field name="name">brt.route.list</field>
+        <field name="model">brt.route</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sender_id"/>
+                <field name="src_warehouse_id"/>
+                <field name="dest_warehouse_id"/>
+                <field name="receiver_ids" widget="many2many_tags"/>
+                <field name="note"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_brt_route_form" model="ir.ui.view">
+        <field name="name">brt.route.form</field>
+        <field name="model">brt.route</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="sender_id"/>
+                            <field name="src_warehouse_id"/>
+                            <field name="dest_warehouse_id"/>
+                        </group>
+                        <group>
+                            <field name="receiver_ids" widget="many2many_tags"/>
+                            <field name="note"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_brt_route" model="ir.actions.act_window">
+        <field name="name">مسارات وصلاحيات التحويل</field>
+        <field name="res_model">brt.route</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
