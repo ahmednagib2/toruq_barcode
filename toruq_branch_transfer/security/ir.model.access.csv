@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_brt_route_manager,brt.route manager,model_brt_route,stock.group_stock_manager,1,1,1,1
 access_brt_log_manager,brt.transfer.log manager,model_brt_transfer_log,stock.group_stock_manager,1,0,0,0
+access_brt_sign_wizard_user,brt.sign.wizard user,model_brt_sign_wizard,stock.group_stock_user,1,1,1,1
