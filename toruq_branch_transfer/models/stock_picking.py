@@ -95,6 +95,7 @@ class StockPicking(models.Model):
             "name": _("التوقيع الإلكتروني"),
             "res_model": "brt.sign.wizard",
             "view_mode": "form",
+            "views": [(False, "form")],
             "target": "new",
             "context": {"default_picking_id": self.id, "default_mode": mode},
         }
