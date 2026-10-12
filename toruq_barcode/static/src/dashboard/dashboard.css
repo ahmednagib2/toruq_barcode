@@ -1,0 +1,103 @@
+.o_tq_dash {
+    padding: 16px;
+    overflow-y: auto;
+    height: 100%;
+}
+.o_tq_head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.o_tq_title {
+    margin: 0;
+    color: #ff3d00;
+}
+.o_tq_tools {
+    display: flex;
+    gap: 8px;
+}
+.o_tq_kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.o_tq_kpi {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 8px;
+    background: #fff;
+    border: 2px solid #e6e6e6;
+    border-radius: 12px;
+    cursor: pointer;
+}
+.o_tq_kpi.is-active {
+    border-color: #ff3d00;
+}
+.o_tq_kpi_value {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+.o_tq_kpi_label {
+    font-size: 0.9rem;
+    color: #555;
+}
+.o_tq_kpi.is-danger .o_tq_kpi_value {
+    color: #dc3545;
+}
+.o_tq_kpi.is-warning .o_tq_kpi_value {
+    color: #e08a00;
+}
+.o_tq_kpi.is-info .o_tq_kpi_value {
+    color: #0d6efd;
+}
+.o_tq_kpi.is-success .o_tq_kpi_value {
+    color: #198754;
+}
+.o_tq_tabs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.o_tq_tab {
+    padding: 6px 14px;
+    background: #f1f1f1;
+    border: 0;
+    border-radius: 999px;
+}
+.o_tq_tab.is-active {
+    color: #fff;
+    background: #ff3d00;
+}
+.o_tq_open_list {
+    margin-inline-start: auto;
+}
+.o_tq_table_wrap {
+    overflow-x: auto;
+    background: #fff;
+    border-radius: 12px;
+}
+.o_tq_row {
+    cursor: pointer;
+}
+.o_tq_row:hover {
+    background: #fff3ef;
+}
+.o_tq_empty,
+.o_tq_loading {
+    padding: 24px;
+    text-align: center;
+    color: #777;
+}
+.o_tq_actions {
+    display: flex;
+    gap: 6px;
+    white-space: nowrap;
+}

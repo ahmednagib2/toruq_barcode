@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="toruq_barcode.CountDashboard">
+        <div class="o_tq_dash" dir="rtl">
+            <div class="o_tq_head">
+                <h2 class="o_tq_title">لوحة الجرد والمخزون</h2>
+                <div class="o_tq_tools">
+                    <select class="form-select" t-on-change="onWarehouse">
+                        <option value="">كل الفروع</option>
+                        <t t-foreach="state.data ? state.data.warehouses : []" t-as="w" t-key="w.id">
+                            <option t-att-value="w.id" t-att-selected="String(w.id) === state.warehouse" t-out="w.name"/>
+                        </t>
+                    </select>
+                    <button type="button" class="btn btn-primary" t-on-click="() => this.load()">تحديث</button>
+                </div>
+            </div>
+
+            <div t-if="state.error" class="alert alert-danger" t-out="state.error"/>
+            <div t-if="state.loading and !state.data and !state.error" class="o_tq_loading">جاري التحميل…</div>
+
+            <t t-if="state.data">
+                <div class="o_tq_kpis">
+                    <t t-foreach="kpis" t-as="k" t-key="k.key">
+                        <button type="button"
+                                t-attf-class="o_tq_kpi {{ k.cls }} {{ state.tab === k.key ? 'is-active' : '' }}"
+                                t-on-click="() => this.setTab(k.key)">
+                            <span class="o_tq_kpi_value" t-out="k.value"/>
+                            <span class="o_tq_kpi_label" t-out="k.label"/>
+                        </button>
+                    </t>
+                </div>
+
+                <div class="o_tq_tabs">
+                    <t t-foreach="tabs" t-as="tab" t-key="tab.key">
+                        <button type="button"
+                                t-attf-class="o_tq_tab {{ state.tab === tab.key ? 'is-active' : '' }}"
+                                t-on-click="() => this.setTab(tab.key)" t-out="tab.label"/>
+                    </t>
+                    <button type="button" class="btn btn-link o_tq_open_list" t-on-click="() => this.openList()">فتح القائمة الكاملة</button>
+                </div>
+
+                <div class="o_tq_table_wrap">
+                    <table class="table table-sm o_tq_table" t-if="state.tab === 'low'">
+                        <thead><tr><th>المنتج</th><th>الموقع</th><th>المتوفر</th><th>الحد الأدنى</th><th>العجز</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="state.data.low" t-as="r" t-key="r.id" class="o_tq_row" t-on-click="() => this.openProduct(r.product_id)">
+                                <td t-out="r.product"/>
+                                <td t-out="r.location"/>
+                                <td t-out="r.qty"/>
+                                <td t-out="r.min"/>
+                                <td class="text-danger fw-bold" t-out="r.short"/>
+                            </tr>
+                            <tr t-if="!state.data.low.length"><td colspan="5" class="o_tq_empty">لا توجد منتجات ناقصة عن الحد الأدنى (تعتمد على قواعد إعادة التخزين المعرّفة).</td></tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-sm o_tq_table" t-if="state.tab === 'negative'">
+                        <thead><tr><th>المنتج</th><th>الموقع</th><th>الدفعة</th><th>الكمية</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="state.data.negative" t-as="r" t-key="r.id" class="o_tq_row" t-on-click="() => this.openProduct(r.product_id)">
+                                <td t-out="r.product"/>
+                                <td t-out="r.location"/>
+                                <td t-out="r.lot"/>
+                                <td class="text-danger fw-bold" t-out="r.qty"/>
+                            </tr>
+                            <tr t-if="!state.data.negative.length"><td colspan="4" class="o_tq_empty">لا يوجد رصيد سالب.</td></tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-sm o_tq_table" t-if="state.tab === 'to_count'">
+                        <thead><tr><th>المنتج</th><th>الموقع</th><th>الدفعة</th><th>كمية النظام</th><th>موعد الجرد</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="state.data.to_count" t-as="r" t-key="r.id" class="o_tq_row" t-on-click="() => this.openProduct(r.product_id)">
+                                <td t-out="r.product"/>
+                                <td t-out="r.location"/>
+                                <td t-out="r.lot"/>
+                                <td t-out="r.qty"/>
+                                <td t-out="r.due"/>
+                            </tr>
+                            <tr t-if="!state.data.to_count.length"><td colspan="5" class="o_tq_empty">لا توجد منتجات تحتاج جرد الآن.</td></tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-sm o_tq_table" t-if="state.tab === 'pending'">
+                        <thead><tr><th>المنتج</th><th>الموقع</th><th>النظام</th><th>المعدود</th><th>الفرق</th><th>العدّاد</th><th>الطالب</th><th></th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="state.data.pending" t-as="r" t-key="r.id" class="o_tq_row" t-on-click="() => this.openProduct(r.product_id)">
+                                <td t-out="r.product"/>
+                                <td t-out="r.location"/>
+                                <td t-out="r.qty"/>
+                                <td t-out="r.counted"/>
+                                <td t-attf-class="fw-bold {{ r.diff &lt; 0 ? 'text-danger' : (r.diff &gt; 0 ? 'text-success' : '') }}" t-out="r.diff"/>
+                                <td t-out="r.counter"/>
+                                <td t-out="r.requester"/>
+                                <td class="o_tq_actions">
+                                    <button type="button" class="btn btn-sm btn-success" t-att-disabled="state.busy" t-on-click.stop="() => this.approve(r)">اعتماد</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" t-att-disabled="state.busy" t-on-click.stop="() => this.reject(r)">رفض</button>
+                                </td>
+                            </tr>
+                            <tr t-if="!state.data.pending.length"><td colspan="8" class="o_tq_empty">لا توجد جرود بانتظار الاعتماد.</td></tr>
+                        </tbody>
+                    </table>
+
+                    <table class="table table-sm o_tq_table" t-if="state.tab === 'events'">
+                        <thead><tr><th>التاريخ</th><th>الحدث</th><th>المنتج</th><th>الموقع</th><th>المنفذ</th><th>المعدود</th><th>الفرق</th></tr></thead>
+                        <tbody>
+                            <tr t-foreach="state.data.events" t-as="r" t-key="r.id" class="o_tq_row" t-on-click="() => this.openProduct(r.product_id)">
+                                <td t-out="fmtDate(r.date)"/>
+                                <td t-out="r.label"/>
+                                <td t-out="r.product"/>
+                                <td t-out="r.location"/>
+                                <td t-out="r.user"/>
+                                <td t-out="r.counted"/>
+                                <td t-out="r.diff"/>
+                            </tr>
+                            <tr t-if="!state.data.events.length"><td colspan="7" class="o_tq_empty">لا توجد أحداث بعد.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

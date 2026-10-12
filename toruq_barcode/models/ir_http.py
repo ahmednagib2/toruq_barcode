@@ -14,5 +14,6 @@ class IrHttp(models.AbstractModel):
             "count_only": count_only,
             "hide_scanner": user.has_group("toruq_barcode.group_barcode_hide_scanner"),
             "guided": user.has_group("toruq_barcode.group_barcode_guided_count"),
+            "manager": user.has_group("stock.group_stock_manager"),
         }
         return res

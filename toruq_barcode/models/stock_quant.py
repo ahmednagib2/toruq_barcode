@@ -29,6 +29,38 @@ class StockQuant(models.Model):
     def _toruq_blocked_message(self):
         return _("الاعتماد النهائي للجرد لمن طلبه أو لمدير المخزون. تم إرسال طلب الموافقة له.")
 
+    def _toruq_log_vals(self, event):
+        """Values for toruq.count.log, one per quant (call on a sudo recordset)."""
+        actor = self.env.user.id
+        company = self.env.company.id
+        return [
+            {
+                "event": event,
+                "product_id": q.product_id.id,
+                "location_id": q.location_id.id,
+                "lot_id": q.lot_id.id or False,
+                "user_id": actor,
+                "counter_id": q.user_id.id or False,
+                "requester_id": q.toruq_requester_id.id or False,
+                "system_qty": q.quantity,
+                "counted_qty": q.inventory_quantity,
+                "diff_qty": q.inventory_diff_quantity,
+                "company_id": q.company_id.id or company,
+            }
+            for q in self
+        ]
+
+    def _toruq_log_in_new_cursor(self, vals):
+        """Persist log rows even when the current transaction is rolled back by a UserError."""
+        if not vals:
+            return
+        try:
+            with self.pool.cursor() as cr:
+                env = api.Environment(cr, SUPERUSER_ID, {})
+                env["toruq.count.log"].create(vals)
+        except Exception:
+            _logger.exception("toruq_barcode: could not write count log")
+
     def write(self, vals):
         # Remember who assigned the counter (Odoo does not store the requester).
         set_requester = bool(vals.get("user_id")) and not self._toruq_is_count_only_user()
@@ -65,7 +97,7 @@ class StockQuant(models.Model):
                 }
                 body = Markup("<p>%s</p><p>%s</p>") % (
                     text,
-                    _("راجع: المخزون ← العمليات ← الجرد الفعلي، ثم اضغط تطبيق بعد المراجعة."),
+                    _("راجع: المخزون ← التقارير ← لوحة الجرد، أو المخزون ← العمليات ← الجرد الفعلي."),
                 )
                 for user in users:
                     partner = user.partner_id
@@ -82,7 +114,10 @@ class StockQuant(models.Model):
 
     def action_apply_inventory(self):
         if self._toruq_is_count_only_user():
+            quants = self.sudo().filtered("inventory_quantity_set") or self.sudo()
+            log_vals = quants._toruq_log_vals("submitted")
             self._toruq_notify_approvers()
+            self._toruq_log_in_new_cursor(log_vals)
             raise UserError(self._toruq_blocked_message())
         return super().action_apply_inventory()
 
@@ -90,4 +125,18 @@ class StockQuant(models.Model):
         # Safety net for any other code path that applies the adjustment.
         if self._toruq_is_count_only_user():
             raise UserError(self._toruq_blocked_message())
-        return super()._apply_inventory()
+        log_vals = self.sudo().filtered("inventory_quantity_set")._toruq_log_vals("applied")
+        res = super()._apply_inventory()
+        if log_vals:
+            self.env["toruq.count.log"].sudo().create(log_vals)
+        return res
+
+    def action_clear_inventory_quantity(self):
+        # Only the dashboard reject button passes toruq_reject, to avoid logging internal clears.
+        log_vals = []
+        if self.env.context.get("toruq_reject"):
+            log_vals = self.sudo().filtered("inventory_quantity_set")._toruq_log_vals("rejected")
+        res = super().action_clear_inventory_quantity()
+        if log_vals:
+            self.env["toruq.count.log"].sudo().create(log_vals)
+        return res

@@ -1,0 +1,110 @@
+/* Inventory count screen: confirm step, counter and dialog. Honeywell-friendly, RTL-safe. */
+.o_barcode_control .o_apply_page {
+    font-size: 0 !important;
+}
+.o_barcode_control .o_apply_page::after {
+    content: "تأكيد";
+    font-size: 1rem;
+}
+.o_tqx_count {
+    display: block;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    padding: 6px 8px;
+}
+.o_tqx_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.55);
+    overflow-x: hidden;
+}
+.o_tqx_box {
+    display: flex;
+    flex-direction: column;
+    width: min(92vw, 420px);
+    max-height: 92vh;
+    max-height: 92dvh;
+    padding: 12px;
+    box-sizing: border-box;
+    background: #fff;
+    border-radius: 10px;
+    overflow-x: hidden;
+}
+.o_tqx_box h4 {
+    margin: 0 0 10px;
+    font-size: 17px;
+}
+.o_tqx_row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px 12px;
+    padding: 10px 0;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+}
+.o_tqx_label {
+    color: #555;
+}
+.o_tqx_value {
+    font-weight: 700;
+}
+.o_tqx_note {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #555;
+}
+.o_tqx_status {
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 8px;
+}
+.o_tqx_status.is-saving {
+    color: #664d03;
+    background: #fff3cd;
+}
+.o_tqx_status.is-saved {
+    color: #0f5132;
+    background: #d1e7dd;
+}
+.o_tqx_status.is-warn {
+    color: #664d03;
+    background: #ffe69c;
+}
+.o_tqx_status.is-error {
+    color: #842029;
+    background: #f8d7da;
+}
+.o_tqx_btn {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 8px;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    border: 0;
+    border-radius: 8px;
+    touch-action: manipulation;
+}
+.o_tqx_btn:disabled {
+    opacity: 0.6;
+}
+.o_tqx_btn_primary {
+    min-height: 56px;
+    font-size: 18px;
+    color: #fff;
+    background: #198754;
+}
+.o_tqx_btn_secondary {
+    color: #fff;
+    background: #6c757d;
+}

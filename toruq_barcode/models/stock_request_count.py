@@ -14,7 +14,11 @@ class StockRequestCount(models.TransientModel):
         if not restricted:
             for wizard in self:
                 if wizard.user_id:
-                    wizard._get_quants_to_count().sudo().with_context(
-                        inventory_mode=False
-                    ).write({"toruq_requester_id": user.id})
+                    quants = wizard._get_quants_to_count().sudo()
+                    quants.with_context(inventory_mode=False).write(
+                        {"toruq_requester_id": user.id}
+                    )
+                    vals = quants._toruq_log_vals("requested")
+                    if vals:
+                        self.env["toruq.count.log"].sudo().create(vals)
         return res
