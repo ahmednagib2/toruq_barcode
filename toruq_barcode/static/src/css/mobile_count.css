@@ -1,0 +1,59 @@
+/* Mobile count cards for Barcode: Count Only users (html.o_toruq_count_only). Honeywell-friendly, RTL-safe. */
+.o_toruq_count_only .o_barcode_line .o_unset {
+    display: none !important;
+}
+.o_toruq_count_only .o_barcode_line .o_line_button:empty {
+    display: none !important;
+}
+.o_toruq_count_only .o_barcode_client_action .o_barcode_line {
+    scroll-margin-block: 80px 100px;
+}
+@media (max-width: 767.98px) {
+    .o_toruq_count_only .o_barcode_client_action .o_barcode_line {
+        padding: 8px !important;
+        max-width: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+    .o_toruq_count_only .o_barcode_line .o_barcode_line_details {
+        width: 100%;
+        min-width: 0;
+    }
+    .o_toruq_count_only .o_barcode_line .o_product_label {
+        font-size: 14px;
+        line-height: 1.35;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+    .o_toruq_count_only .o_barcode_line .o_barcode_line_title {
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+    .o_toruq_count_only .o_barcode_line .o_edit {
+        min-width: 40px;
+        min-height: 40px;
+    }
+    .o_toruq_count_only .o_barcode_line_details > .d-flex.align-items-end {
+        flex-wrap: wrap;
+        gap: 6px 8px;
+    }
+    .o_toruq_count_only .o_barcode_line .o_barcode_scanner_qty {
+        font-size: 1.75rem !important;
+        line-height: 1.1;
+    }
+    .o_toruq_count_only .o_barcode_line_details > .d-flex.align-items-end > .d-flex:last-child {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px !important;
+        flex: 1 1 100%;
+        width: 100%;
+    }
+    .o_toruq_count_only .o_barcode_line .o_remove_unit,
+    .o_toruq_count_only .o_barcode_line .o_add_quantity {
+        min-height: 48px;
+        font-size: 18px;
+        font-weight: 700;
+        touch-action: manipulation;
+    }
+}

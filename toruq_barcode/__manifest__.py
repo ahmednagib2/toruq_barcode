@@ -1,6 +1,6 @@
 {
     "name": "Toruq Barcode - Inventory Count",
-    "version": "18.0.5.1.0",
+    "version": "18.0.5.2.0",
     "summary": "Count-only, hide-scanner and guided-count modes, count confirmation, audit log and manager dashboard for inventory",
     "category": "Inventory/Barcode",
     "author": "Toruq",
@@ -18,6 +18,8 @@
             "toruq_barcode/static/src/css/count_only.css",
             "toruq_barcode/static/src/js/count_tools.js",
             "toruq_barcode/static/src/css/count_tools.css",
+            "toruq_barcode/static/src/js/mobile_count.js",
+            "toruq_barcode/static/src/css/mobile_count.css",
             "toruq_barcode/static/src/dashboard/dashboard.js",
             "toruq_barcode/static/src/dashboard/dashboard.xml",
             "toruq_barcode/static/src/dashboard/dashboard.css",
@@ -25,6 +27,8 @@
         "stock_barcode.assets_stock_barcode": [
             "toruq_barcode/static/src/js/count_tools.js",
             "toruq_barcode/static/src/css/count_tools.css",
+            "toruq_barcode/static/src/js/mobile_count.js",
+            "toruq_barcode/static/src/css/mobile_count.css",
         ],
     },
     "installable": True,
