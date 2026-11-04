@@ -16,10 +16,13 @@ const T = {
     cancel: "إلغاء",
     fail: "تعذر تحديث الكمية، استخدم الأزرار +1 / -1.",
     noModel: "تعذر الوصول لنموذج الباركود، أعد تحميل الصفحة.",
+    saved: "✓ تم حفظ الكمية",
+    saveFail: "تعذر حفظ الكمية: ",
 };
 
 if (flags.count_only || session.toruq_barcode_count_only) {
     let activeComp = null;
+    let saveTimer = null;
     const patched = new Set();
     const patchActions = () => {
         for (const [key, C] of registry.category("actions").getEntries()) {
@@ -52,12 +55,31 @@ if (flags.count_only || session.toruq_barcode_count_only) {
         const m = activeComp && activeComp.env && activeComp.env.model;
         return m && typeof m.updateLineQty === "function" ? m : null;
     };
+    const findRec = (model, vid) =>
+        (model.pageLines || []).find((l) => String(l.virtual_id) === String(vid));
     const readQty = (line) => {
         const el = line && line.querySelector(".o_barcode_scanner_qty");
         const m = toLatin((el && el.textContent) || "").match(/\d+(?:[.,]\d+)?/);
         return m ? parseFloat(m[0].replace(",", ".")) : 0;
     };
     const findLine = (vid) => document.querySelector(`${LINE}[data-virtual-id="${vid}"]`);
+
+    // same effect as pencil form + "تأكيد": write the counted quantity to the server
+    const persist = async (model, vid, notify) => {
+        const rec = findRec(model, vid);
+        if (rec && rec.inventory_quantity_set === false) {
+            rec.inventory_quantity_set = true;
+        }
+        if (typeof model.save !== "function") {
+            return;
+        }
+        try {
+            await model.save();
+            notify(T.saved, "success");
+        } catch (e) {
+            notify(T.saveFail + ((e && e.message) || ""), "danger");
+        }
+    };
 
     // set an exact quantity; re-checks the screen and corrects (works whether the model adds or sets)
     const applyQty = async (vid, target, notify) => {
@@ -66,13 +88,15 @@ if (flags.count_only || session.toruq_barcode_count_only) {
             notify(T.noModel, "warning");
             return;
         }
-        const rec = (model.pageLines || []).find((l) => String(l.virtual_id) === String(vid));
+        const rec = findRec(model, vid);
         const id = rec ? rec.virtual_id : vid;
+        let done = false;
         for (let i = 0; i < 3; i++) {
             const current = readQty(findLine(vid));
             const delta = Math.round((target - current) * 1000) / 1000;
             if (!delta) {
-                return;
+                done = true;
+                break;
             }
             try {
                 await model.updateLineQty(id, delta);
@@ -82,9 +106,15 @@ if (flags.count_only || session.toruq_barcode_count_only) {
             }
             await sleep(350);
         }
-        if (readQty(findLine(vid)) !== target) {
-            notify(T.fail, "warning");
+        if (!done) {
+            done = readQty(findLine(vid)) === target;
         }
+        if (!done) {
+            notify(T.fail, "warning");
+            return;
+        }
+        clearTimeout(saveTimer);
+        await persist(model, vid, notify);
     };
 
     const openEditor = (lineEl, notify) => {
@@ -162,6 +192,21 @@ if (flags.count_only || session.toruq_barcode_count_only) {
         }
     };
 
+    // +1 / -1 taps are also written to the server shortly after the last tap
+    const scheduleSave = () => {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(async () => {
+            const model = getModel();
+            if (model && typeof model.save === "function") {
+                try {
+                    await model.save();
+                } catch (e) {
+                    console.warn("toruq auto-save failed", e);
+                }
+            }
+        }, 900);
+    };
+
     registry.category("services").add("toruq_mobile_count", {
         dependencies: ["notification"],
         start(env, { notification }) {
@@ -181,6 +226,9 @@ if (flags.count_only || session.toruq_barcode_count_only) {
                         ev.stopPropagation();
                         openEditor(line, notify);
                         return;
+                    }
+                    if (ev.target.closest(".o_add_quantity, .o_remove_unit")) {
+                        scheduleSave();
                     }
                     [60, 250, 600].forEach((ms) => setTimeout(reveal, ms));
                 },

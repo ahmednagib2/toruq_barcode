@@ -1,12 +1,16 @@
-from odoo import api, models
+from odoo import api, fields, models
 from odoo.osv import expression
 
 _AR_DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789")
 
 
+def _split(value):
+    return str(value or "").translate(_AR_DIGITS).split()
+
+
 def _tokens(operator, value):
     if operator in ("ilike", "like") and isinstance(value, str):
-        tokens = value.translate(_AR_DIGITS).split()
+        tokens = _split(value)
         if len(tokens) > 1:
             return tokens
     return None
@@ -14,6 +18,31 @@ def _tokens(operator, value):
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
+
+    toruq_multi_search = fields.Char(
+        string="Product Search (Toruq)",
+        compute="_compute_toruq_multi_search",
+        search="_search_toruq_multi",
+    )
+
+    def _compute_toruq_multi_search(self):
+        for rec in self:
+            rec.toruq_multi_search = False
+
+    @api.model
+    def _search_toruq_multi(self, operator, value):
+        domains = []
+        for token in _split(value):
+            domains.append(
+                [
+                    "|",
+                    "|",
+                    ("name", "ilike", token),
+                    ("default_code", "ilike", token),
+                    ("barcode", "ilike", token),
+                ]
+            )
+        return expression.AND(domains) if domains else []
 
     @api.model
     def _search_display_name(self, operator, value):
@@ -28,6 +57,33 @@ class ProductProduct(models.Model):
 
 class ProductTemplate(models.Model):
     _inherit = "product.template"
+
+    toruq_multi_search = fields.Char(
+        string="Product Search (Toruq)",
+        compute="_compute_toruq_multi_search",
+        search="_search_toruq_multi",
+    )
+
+    def _compute_toruq_multi_search(self):
+        for rec in self:
+            rec.toruq_multi_search = False
+
+    @api.model
+    def _search_toruq_multi(self, operator, value):
+        domains = []
+        for token in _split(value):
+            domains.append(
+                [
+                    "|",
+                    "|",
+                    "|",
+                    ("name", "ilike", token),
+                    ("default_code", "ilike", token),
+                    ("product_variant_ids.default_code", "ilike", token),
+                    ("product_variant_ids.barcode", "ilike", token),
+                ]
+            )
+        return expression.AND(domains) if domains else []
 
     @api.model
     def _search_display_name(self, operator, value):
