@@ -1,6 +1,6 @@
 {
     "name": "Toruq Barcode - Inventory Count",
-    "version": "18.0.5.3.0",
+    "version": "18.0.5.4.0",
     "summary": "Count-only, hide-scanner and guided-count modes, count confirmation, audit log and manager dashboard for inventory",
     "category": "Inventory/Barcode",
     "author": "Toruq",
