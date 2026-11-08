@@ -1,5 +1,8 @@
 /** @odoo-module **/
 import { session } from "@web/session";
+import { patch } from "@web/core/utils/patch";
+import { _t } from "@web/core/l10n/translation";
+import { Many2XAutocomplete } from "@web/views/fields/relational_utils";
 
 const root = document.documentElement;
 const flags = session.toruq_barcode_flags || {};
@@ -148,4 +151,71 @@ if (flags.guided) {
     } else {
         document.addEventListener("DOMContentLoaded", start);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Multi-word product search for every product many2one (order lines, etc.).
+// Pure JS: works without restarting the Odoo server.
+// ---------------------------------------------------------------------------
+const TQ_PRODUCT_MODELS = ["product.product", "product.template"];
+const tqTokens = (resModel, name) => {
+    if (!TQ_PRODUCT_MODELS.includes(resModel)) {
+        return null;
+    }
+    const tokens = String(name || "")
+        .replace(/[\u0660-\u0669]/g, (d) => String(d.charCodeAt(0) - 0x660))
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+    return tokens.length > 1 ? tokens : null;
+};
+
+if (Many2XAutocomplete) {
+    patch(Many2XAutocomplete.prototype, {
+        async toruqProductSearch(tokens, limit) {
+            const domain = [...(this.props.getDomain() || [])];
+            for (const token of tokens) {
+                domain.push(
+                    "|",
+                    "|",
+                    ["name", "ilike", token],
+                    ["default_code", "ilike", token],
+                    ["barcode", "ilike", token]
+                );
+            }
+            const rows = await this.orm.call(this.props.resModel, "search_read", [], {
+                domain,
+                fields: ["display_name"],
+                limit,
+                context: this.props.context,
+            });
+            return rows.map((r) => [r.id, r.display_name]);
+        },
+        search(name) {
+            const tokens = tqTokens(this.props.resModel, name);
+            if (!tokens) {
+                return super.search(...arguments);
+            }
+            return this.toruqProductSearch(tokens, this.props.searchLimit + 1);
+        },
+        async onSearchMore(request) {
+            const tokens = tqTokens(this.props.resModel, request);
+            if (!tokens) {
+                return super.onSearchMore(...arguments);
+            }
+            const { getDomain, context, fieldString } = this.props;
+            const found = await this.toruqProductSearch(tokens, this.props.searchMoreLimit);
+            this.selectCreate({
+                domain: getDomain(),
+                context,
+                filters: [
+                    {
+                        description: _t("Quick search: %s", request),
+                        domain: [["id", "in", found.map((r) => r[0])]],
+                    },
+                ],
+                title: _t("Search: %s", fieldString),
+            });
+        },
+    });
 }
