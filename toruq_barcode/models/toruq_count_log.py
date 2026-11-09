@@ -28,3 +28,4 @@ class ToruqCountLog(models.Model):
     counted_qty = fields.Float(string="الكمية المعدودة", digits="Product Unit of Measure")
     diff_qty = fields.Float(string="الفرق", digits="Product Unit of Measure")
     company_id = fields.Many2one("res.company", string="الشركة")
+    note = fields.Char(string="ملاحظة / سبب")
