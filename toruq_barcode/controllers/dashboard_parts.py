@@ -30,7 +30,7 @@ class ToruqCountDashboardParts(ToruqCountDashboardPro):
         out = []
         for title, rows, cols in ToruqCountDashboardPro._sheets(d):
             if title == "بانتظار الاعتماد":
-                cols = [c for c in cols if c[0] != "requester"] + [
+                cols = [c for c in cols if c[0] not in ("requester", "counter", "counted")] + [
                     ("total", "إجمالي العدّ"),
                     ("breakdown", "التفصيل"),
                 ]
